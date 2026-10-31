@@ -7,6 +7,7 @@ interface Props {
   stop: Stop
   last: boolean
   onCopy: (address: string) => void
+  onDishes: (stop: Stop) => void
 }
 
 function Detail({ label, text }: { label: string; text?: string }) {
@@ -19,11 +20,12 @@ function Detail({ label, text }: { label: string; text?: string }) {
   )
 }
 
-export default function StopCard({ stop, last, onCopy }: Props) {
+export default function StopCard({ stop, last, onCopy, onDishes }: Props) {
   const [open, setOpen] = useState(false)
   const cat = categories[stop.category]
   const Icon = cat.icon
-  const hasDetails = stop.whatsGood || stop.whatToEat || stop.notes || stop.warn || stop.mapsUrl || stop.address
+  const hasDishes = !!stop.dishes?.length
+  const hasDetails = stop.whatsGood || stop.whatToEat || stop.notes || stop.warn || stop.mapsUrl || stop.address || hasDishes
 
   return (
     <li className="relative flex gap-3">
@@ -69,6 +71,15 @@ export default function StopCard({ stop, last, onCopy }: Props) {
               <Detail label="What to eat" text={stop.whatToEat} />
               <Detail label="Notes" text={stop.notes} />
               {stop.address && <p className="text-[12.5px] text-muted">📍 {stop.address}</p>}
+              {hasDishes && (
+                <button
+                  type="button"
+                  onClick={() => onDishes(stop)}
+                  className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-500/15 text-[14px] font-semibold text-amber-700 ring-1 ring-amber-500/30 transition active:scale-[0.97] active:opacity-80 dark:text-amber-300"
+                >
+                  🍽️ See the dishes
+                </button>
+              )}
               {stop.mapsUrl && (
                 <div className="flex gap-2">
                   <a

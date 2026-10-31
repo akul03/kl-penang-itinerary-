@@ -3,6 +3,7 @@ import { Info, Moon, Sun } from 'lucide-react'
 import { days, trip } from './data/itinerary'
 import StopCard from './components/StopCard'
 import TripSheet from './components/TripSheet'
+import DishSheet from './components/DishSheet'
 import { copyText } from './clipboard'
 
 type Theme = 'dark' | 'light'
@@ -25,6 +26,7 @@ export default function App() {
   const [day, setDay] = useState(initialDay)
   const [theme, setTheme] = useState<Theme>(() => (read('theme') === 'light' ? 'light' : 'dark'))
   const [sheet, setSheet] = useState(false)
+  const [dishView, setDishView] = useState<{ title: string; ids: string[] } | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const toastTimer = useRef<number>()
   const tabs = useRef<Record<number, HTMLButtonElement | null>>({})
@@ -107,12 +109,15 @@ export default function App() {
         </div>
         <ol key={current.n}>
           {current.stops.map((s, i) => (
-            <StopCard key={`${current.n}-${i}`} stop={s} last={i === current.stops.length - 1} onCopy={onCopy} />
+            <StopCard key={`${current.n}-${i}`} stop={s} last={i === current.stops.length - 1} onCopy={onCopy}
+              onDishes={st => setDishView({ title: st.title, ids: st.dishes ?? [] })}
+            />
           ))}
         </ol>
       </main>
 
       {sheet && <TripSheet onClose={() => setSheet(false)} />}
+      {dishView && <DishSheet title={dishView.title} ids={dishView.ids} onClose={() => setDishView(null)} />}
 
       {toast && (
         <div
